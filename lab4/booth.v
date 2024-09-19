@@ -78,7 +78,7 @@ always @(posedge clk) begin
         partial_res <= 32'b0;
       end
       2'b11: begin // new window + shift
-        window <= {data_b[1:0], prev};
+        window <= data_b{window_count*2+1-:3}
         data_a <= data_a <<< 2*window_count;
         state <= 2'b01;
       end
