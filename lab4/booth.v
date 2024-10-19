@@ -14,7 +14,7 @@ module booth(
 );
 
 // Registers
-reg [31:0] partial_res;
+reg signed [31:0] partial_res;
 reg [2:0] window_count;
 wire [1:0] state; // busy, irq
 reg start_prev_q;
@@ -22,7 +22,7 @@ reg start_prev_q;
 assign state = {busy,irq};
 
 // signals
-wire [16:0] action_value;
+wire signed [16:0] action_value;
 wire [2:0] window;
 
 ////////// detect start positive edge ///////////
@@ -38,7 +38,7 @@ end
 assign start_posedge = !start_prev_q && start;
 
 ////////// CA2 complement //////////////
-wire [15:0] data_a_comp;
+wire signed [15:0] data_a_comp;
 assign data_a_comp = ~data_a + 1'b1;
 
 ///////////////// 2x multiplicand //////////////////////
@@ -56,7 +56,7 @@ assign action_value = (window == 3'b001 || window == 3'b010) ? {data_a[15],data_
                       17'b0;
 
 ////////// Partial sum //////////////
-wire [31:0] partial_sum;
+wire signed [31:0] partial_sum;
 assign partial_sum = partial_res + {action_value,15'b0};
 
 ////////// Main sequential logic //////////////
@@ -78,7 +78,7 @@ always @(posedge clk) begin
           window_count <= window_count + 1'b1;
         end else begin // end of multiplication
           window_count <= 3'b0;
-          result <= partial_sum >>> 2;
+          result <= partial_sum >>> 1;
 
           if (irq_enable) irq <= 1'b1;
           else busy <= 1'b0;
@@ -93,10 +93,5 @@ always @(posedge clk) begin
     endcase
   end
 end
-
-
-
-
-
 
 endmodule
