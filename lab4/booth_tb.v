@@ -74,6 +74,10 @@ initial begin
     wait_ack();
     set_operands(-670,2);
     wait_ack();
+    set_operands(43,3);
+    wait_ack();
+    set_operands(-57,5);
+    wait_ack();
     set_operands({16{1'b1}},{16{1'b1}});
     wait_ack();
     set_operands({1'b0,{15{1'b1}}},{1'b0,{15{1'b1}}});
