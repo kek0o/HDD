@@ -78,7 +78,7 @@ always @(posedge clk) begin
           window_count <= window_count + 1'b1;
         end else begin // end of multiplication
           window_count <= 3'b0;
-          result <= partial_sum >>> 1;
+          partial_res <= partial_sum >>> 1;
 
           if (irq_enable) irq <= 1'b1;
           else busy <= 1'b0;
@@ -93,5 +93,7 @@ always @(posedge clk) begin
     endcase
   end
 end
+
+assign result = partial_res;
 
 endmodule
