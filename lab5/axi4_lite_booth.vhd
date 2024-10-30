@@ -17,7 +17,7 @@ entity axi4_lite_booth is
 	port (
 		-- Users to add ports here
     
-    out_irq: out std_logic;
+    out_irq: in std_logic;
 
 		-- User ports ends
 		-- Do not modify the ports beyond this line
