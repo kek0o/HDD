@@ -1,6 +1,5 @@
 #include "address_map_arm.h"
 #include <stdio.h>
-#define COUNT28_BASE_ADDRESS 0xFF200020
 
 void set_A9_IRQ_stack(void);
 void config_GIC(void);
@@ -35,6 +34,14 @@ int main(void) {
     printf("\nProgram starts...\n");
 
     do {
+    
+        // check that there is no pending multiplication (busy output)
+        while (*slv_reg3_ptr & (1 << 1));
+        
+        // activate and deactivate ack signal
+        *slv_reg3_ptr |= (1 << 2);  // set ack signal to 1
+        *slv_reg3_ptr &= ~(1 << 2); // clear ack signal to 0
+        
         // prompt user for multiplicand and multiplier
         printf("Enter the multiplicand: ");
         scanf("%d", &multiplicand);
@@ -44,8 +51,6 @@ int main(void) {
         *slv_reg0_ptr = multiplicand; // write multiplicand to slv_reg0
         *slv_reg1_ptr = multiplier;   // write multiplier to slv_reg1
 
-        // check that there is no pending multiplication (busy output)
-        while (*slv_reg3_ptr & (1 << 1));
 
         // start multiplication (set start signal to 1)
         *slv_reg3_ptr |= 1;
@@ -56,16 +61,10 @@ int main(void) {
         // reset interrupt flag
         multiplier_interrupt_flag = 0;
 
-        // activate and deactivate ack signal
-        *slv_reg3_ptr |= (1 << 2);  // set ack signal to 1
-        *slv_reg3_ptr &= ~(1 << 2); // clear ack signal to 0
 
         // clear start signal
         *slv_reg3_ptr &= ~1;
 
-        // read result from slv_reg2 and display it
-        result = *slv_reg2_ptr;
-        printf("Result: %d\n", result);
 
         // ask if user wants to perform another multiplication
         printf("Do you want to perform another multiplication? (y/n): ");
